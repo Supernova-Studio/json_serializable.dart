@@ -39,7 +39,7 @@ class IterableHelper extends TypeHelper<TypeHelperContextWithConfig> {
     if (subField != closureArg) {
       final lambda = LambdaResult.process(subField, closureArg);
 
-      expression = '$expression$optionalQuestion.map($lambda)';
+      expression = '$expression$optionalQuestion.map<dynamic>($lambda)';
 
       // expression now represents an Iterable (even if it started as a List
       // ...resetting `isList` to `false`.
@@ -85,7 +85,7 @@ class IterableHelper extends TypeHelper<TypeHelperContextWithConfig> {
 
     if (closureArg != itemSubVal) {
       final lambda = LambdaResult.process(itemSubVal, closureArg);
-      output += '$optionalQuestion.map($lambda)';
+      output += '$optionalQuestion.map<dynamic>($lambda)';
     }
 
     if (_coreListChecker.isExactlyType(targetType)) {
