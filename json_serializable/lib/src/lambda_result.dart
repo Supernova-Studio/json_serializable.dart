@@ -14,5 +14,5 @@ class LambdaResult {
   static String process(Object subField, String closureArg) =>
       (subField is LambdaResult && closureArg == subField.expression)
           ? subField.lambda
-          : '($closureArg) => $subField';
+          : '(dynamic $closureArg) => $subField';
 }
