@@ -11,8 +11,8 @@ class LambdaResult {
   @override
   String toString() => '$lambda($expression)';
 
-  static String process(Object subField, String closureArg) =>
+  static String process(Object subField, String closureArg, {String type}) =>
       (subField is LambdaResult && closureArg == subField.expression)
           ? subField.lambda
-          : '(dynamic $closureArg) => $subField';
+          : '(${type != null ? "$type " : ''}$closureArg) => $subField';
 }

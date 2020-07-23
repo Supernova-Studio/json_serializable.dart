@@ -2,6 +2,7 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart' show TypeChecker;
 
@@ -37,9 +38,20 @@ class IterableHelper extends TypeHelper<TypeHelperContextWithConfig> {
     // will be identical to `substitute` – so no explicit mapping is needed.
     // If they are not equal, then we to write out the substitution.
     if (subField != closureArg) {
-      final lambda = LambdaResult.process(subField, closureArg);
+      final lambda = LambdaResult.process(
+        subField,
+        closureArg,
+        type: itemType.element.name.toString(),
+      );
 
-      expression = '$expression$optionalQuestion.map($lambda)';
+      final isItemList = (itemType.element is ClassElement)
+          ? (itemType.element as ClassElement)
+              .interfaces
+              .any((element) => element.name == 'Iterable')
+          : false;
+      final genericType = isItemList ? '' : '<dynamic>';
+
+      expression = '$expression$optionalQuestion.map$genericType($lambda)';
 
       // expression now represents an Iterable (even if it started as a List
       // ...resetting `isList` to `false`.
@@ -84,8 +96,9 @@ class IterableHelper extends TypeHelper<TypeHelperContextWithConfig> {
     final optionalQuestion = context.nullable ? '?' : '';
 
     if (closureArg != itemSubVal) {
-      final lambda = LambdaResult.process(itemSubVal, closureArg);
-      output += '$optionalQuestion.map<dynamic>($lambda)';
+      final lambda =
+          LambdaResult.process(itemSubVal, closureArg, type: 'dynamic');
+      output += '$optionalQuestion.map($lambda)';
     }
 
     if (_coreListChecker.isExactlyType(targetType)) {
